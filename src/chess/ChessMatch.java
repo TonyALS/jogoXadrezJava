@@ -1,7 +1,6 @@
 package chess;
 
 import boardgame.Board;
-import boardgame.Position;
 import chess.pieces.King;
 import chess.pieces.Rook;
 
@@ -28,8 +27,13 @@ public class ChessMatch {
 		return mat;
 	}
 	
+	private void colocarNovaPeca(char coluna, int linha, ChessPiece peca) {
+		tabuleiro.colocarPeca(peca, new ChessPosition(coluna, linha).paraPosicao());
+	}
+	
 	private void iniciaPartida() {
-		tabuleiro.colocarPeca(new Rook(tabuleiro, Color.WHITE), new Position(2, 1));
-		tabuleiro.colocarPeca(new King(tabuleiro, Color.BLACK), new Position(0, 4));
+		colocarNovaPeca('b', 6, new Rook(tabuleiro, Color.WHITE));
+		colocarNovaPeca('e', 8, new King(tabuleiro, Color.BLACK));
+		colocarNovaPeca('e', 1, new King(tabuleiro, Color.WHITE));
 	}
 }

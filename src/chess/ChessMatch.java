@@ -1,6 +1,9 @@
 package chess;
 
 import boardgame.Board;
+import boardgame.Position;
+import chess.pieces.King;
+import chess.pieces.Rook;
 
 //Essa é a classe principal, nela estão todas as regras do jogo de xadrez
 
@@ -11,6 +14,7 @@ public class ChessMatch {
 	//Construtor que define o tamanho do tabuleiro:
 	public ChessMatch() {
 		tabuleiro = new Board(8, 8);
+		iniciaPartida();
 	}
 	
 	//Método para retornar uma matriz de peças de xadrez correspondente a esta partida (ChessMatch):
@@ -22,5 +26,10 @@ public class ChessMatch {
 			}
 		}
 		return mat;
+	}
+	
+	private void iniciaPartida() {
+		tabuleiro.colocarPeca(new Rook(tabuleiro, Color.WHITE), new Position(2, 1));
+		tabuleiro.colocarPeca(new King(tabuleiro, Color.BLACK), new Position(0, 4));
 	}
 }

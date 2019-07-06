@@ -40,4 +40,10 @@ public class Board {
 		return pecas[posicao.getLinha()][posicao.getColuna()];
 	}
 	
+	//Coloca peca no tabuleiro:
+	public void colocarPeca(Piece peca, Position posicao) {
+		pecas[posicao.getLinha()][posicao.getColuna()] = peca;
+		peca.posicao = posicao;
+	}
+	
 }

@@ -52,10 +52,12 @@ public class ChessMatch {
 		return pecaCapturada;
 	}
 	
-	
 	private void validarPosicaoOrigem(Position posicao) {
 		if(!tabuleiro.posicaoTemPeca(posicao)) {
 			throw new ChessException("Não existe peça na posição de origem.");
+		}
+		if(!tabuleiro.peca(posicao).existeMovimentoPossivel()) {
+			throw new ChessException("Não há movimentos possíveis para esta peça.");
 		}
 	}
 	

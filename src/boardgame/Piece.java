@@ -1,6 +1,6 @@
 package boardgame;
 
-public class Piece {
+public abstract class Piece {
 	
 	//Está encapsulada como protected para não ser visível na camada de xadrez.
 	protected Position posicao;
@@ -20,6 +20,23 @@ public class Piece {
 		return tabuleiro;
 	}
 
-
+	//Método abstrato:
+	public abstract boolean[][] movimentosPossiveis();
 	
+	//Método concreto:
+	public boolean movimentoPossivel(Position posicao) {
+		return movimentosPossiveis()[posicao.getLinha()][posicao.getColuna()];
+	}
+	
+	public boolean existeMovimentoPossivel() {
+		boolean[][] mat = movimentosPossiveis();
+		for(int i = 0; i < mat.length; i++) {
+			for(int j = 0; j < mat.length; j++) {
+				if(mat[i][j]) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 }

@@ -33,6 +33,7 @@ public class ChessMatch {
 		Position origem = posicaoOrigem.paraPosicao();
 		Position destino = posicaoDestino.paraPosicao();
 		validarPosicaoOrigem(origem);
+		validarPosicaoDestino(origem, destino);
 		Piece pecaCapturada = realizaMovimento(origem, destino);
 		
 		//Downcasting (Conversão) de peca capturada já que ela era do tipo Piece.
@@ -60,6 +61,13 @@ public class ChessMatch {
 			throw new ChessException("Não há movimentos possíveis para esta peça.");
 		}
 	}
+	
+	private void validarPosicaoDestino(Position origem, Position destino) {
+		if(!tabuleiro.peca(origem).movimentoPossivel(destino)) {
+			throw new ChessException("A peca escolhida não pode se mover para a posicao destino.");
+		}
+	}
+	
 	
 	private void colocarNovaPeca(char coluna, int linha, ChessPiece peca) {
 		tabuleiro.colocarPeca(peca, new ChessPosition(coluna, linha).paraPosicao());

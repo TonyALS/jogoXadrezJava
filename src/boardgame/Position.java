@@ -26,12 +26,14 @@ public class Position {
 		this.coluna = coluna;
 	}
 	
+	public void setValor(int linha, int coluna) {
+		this.linha = linha;
+		this.coluna = coluna;
+	}
+	
 	//Método para imprimir as linhas do tabuleiro:
 	@Override
 	public String toString() {
 		return linha + ", " + coluna;
 	}
-	
-	
-
 }

@@ -13,21 +13,27 @@ public class Program {
 	public static void main(String[] args) {
 
 		Scanner sc = new Scanner(System.in);
-		ChessMatch partidaChadrez = new ChessMatch();
+		ChessMatch partidaXadrez = new ChessMatch();
 
 		while (true) {
 			try {
 				UI.limparTela();
-				UI.imprimeTabuleiro(partidaChadrez.getPecas());
+				UI.imprimeTabuleiro(partidaXadrez.getPecas());
 				System.out.println();
 				System.out.print("Origem: ");
 				ChessPosition origem = UI.lerPosicaoXadrez(sc);
+				
+				//Imprimir movimentos possíveis:
+				boolean[][] movimentosPossiveis = partidaXadrez.movimentosPossiveis(origem);
+				UI.limparTela();
+				UI.imprimeTabuleiro(partidaXadrez.getPecas(), movimentosPossiveis);
+				
 
 				System.out.println();
 				System.out.print("Destino: ");
 				ChessPosition destino = UI.lerPosicaoXadrez(sc);
 
-				ChessPiece pecaCapturada = partidaChadrez.movimentaPeca(origem, destino);
+				ChessPiece pecaCapturada = partidaXadrez.movimentaPeca(origem, destino);
 			} catch (ChessException e) {
 				System.out.println(e.getMessage());
 				sc.nextLine();

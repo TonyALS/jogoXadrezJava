@@ -29,6 +29,14 @@ public class ChessMatch {
 		return mat;
 	}
 	
+	//Método para colorir as movimentações possíveis de cada peça
+	public boolean[][] movimentosPossiveis(ChessPosition posicaoOrigem){
+		Position posicao = posicaoOrigem.paraPosicao();
+		validarPosicaoOrigem(posicao);
+		return tabuleiro.peca(posicao).movimentosPossiveis();
+	}
+	
+	
 	public ChessPiece movimentaPeca(ChessPosition posicaoOrigem, ChessPosition posicaoDestino) {
 		Position origem = posicaoOrigem.paraPosicao();
 		Position destino = posicaoDestino.paraPosicao();

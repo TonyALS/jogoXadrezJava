@@ -1,5 +1,8 @@
 package chess;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import boardgame.Board;
 import boardgame.Piece;
 import boardgame.Position;
@@ -13,6 +16,9 @@ public class ChessMatch {
 	private int turno;
 	private Color currentPlayer;
 	private Board tabuleiro;
+	
+	private List<Piece> pecasNoTabuleiro = new ArrayList<>();
+	private List<Piece> pecasCapturadas = new ArrayList<>();
 	
 	//Construtor que define o tamanho do tabuleiro:
 	public ChessMatch() {
@@ -70,6 +76,11 @@ public class ChessMatch {
 		//Coloca a peça p na posição de destino:
 		tabuleiro.colocarPeca(p, destino);
 		
+		if(pecaCapturada != null) {
+			pecasNoTabuleiro.remove(pecaCapturada);
+			pecasCapturadas.add(pecaCapturada);
+		}
+		
 		return pecaCapturada;
 	}
 	
@@ -91,15 +102,15 @@ public class ChessMatch {
 		}
 	}
 	
-	
-	private void colocarNovaPeca(char coluna, int linha, ChessPiece peca) {
-		tabuleiro.colocarPeca(peca, new ChessPosition(coluna, linha).paraPosicao());
-	}
-	
 	private void proximoTurno() {
 		turno++;
 		//Se o jogador atual é == Color.WHITE então agora vai ser Color.BLACK. Caso contrário ":" Color.WHITE.
 		currentPlayer = (currentPlayer == Color.WHITE) ? Color.BLACK : Color.WHITE;
+	}
+	
+	private void colocarNovaPeca(char coluna, int linha, ChessPiece peca) {
+		tabuleiro.colocarPeca(peca, new ChessPosition(coluna, linha).paraPosicao());
+		pecasNoTabuleiro.add(peca);
 	}
 	
 	private void iniciaPartida() {

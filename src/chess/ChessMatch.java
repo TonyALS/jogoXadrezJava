@@ -20,6 +20,7 @@ public class ChessMatch {
 	
 	//Por padrão um boolean começa com false:
 	private boolean check;
+	private boolean checkMate;
 	
 	private List<Piece> pecasNoTabuleiro = new ArrayList<>();
 	private List<Piece> pecasCapturadas = new ArrayList<>();
@@ -44,6 +45,10 @@ public class ChessMatch {
 		return check;
 	}
 	
+	public boolean getCheckMate() {
+		return checkMate;
+	}
+	
 	//Método para retornar uma matriz de peças de xadrez correspondente a esta partida (ChessMatch):
 	public ChessPiece[][] getPecas() {
 		ChessPiece[][] mat = new ChessPiece[tabuleiro.getLinhas()][tabuleiro.getColunas()];
@@ -62,6 +67,7 @@ public class ChessMatch {
 		return tabuleiro.peca(posicao).movimentosPossiveis();
 	}
 	
+	//performChessMove
 	public ChessPiece movimentaPeca(ChessPosition posicaoOrigem, ChessPosition posicaoDestino) {
 		Position origem = posicaoOrigem.paraPosicao();
 		Position destino = posicaoDestino.paraPosicao();
@@ -77,11 +83,16 @@ public class ChessMatch {
 		//Se o teste check do oponente for verdadeiro, então check receberá true, : (senão) receberá false:
 		check = (testCheck(oponente(currentPlayer))) ? true : false;
 		
-		proximoTurno();
+		if(testCheckMate(oponente(currentPlayer))) {
+			checkMate = true;
+		}else {
+			proximoTurno();
+		}
 		//Downcasting (Conversão) de peca capturada já que ela era do tipo Piece.
 		return (ChessPiece)pecaCapturada;
 	}
 	
+	//makeMovie
 	private Piece realizaMovimento(Position origem, Position destino) {
 		//Remove a peça da posição de origem:
 		Piece p = tabuleiro.removePeca(origem);
@@ -165,24 +176,43 @@ public class ChessMatch {
 		return false;
 	}
 	
+	private boolean testCheckMate(Color cor) {
+		
+		if(!testCheck(cor)) {
+			return false;
+		}
+		List<Piece> list = pecasNoTabuleiro.stream().filter(x -> ((ChessPiece)x).getCor()==cor).collect(Collectors.toList());
+		for(Piece p : list) {
+			boolean[][] mat = p.movimentosPossiveis();
+			for(int i = 0; i < tabuleiro.getLinhas(); i++) {
+				for(int j = 0; j < tabuleiro.getColunas(); j++) {
+					if(mat[i][j]) {
+						Position origem = ((ChessPiece)p).getPosicaoPeca().paraPosicao();
+						Position destino = new Position(i, j);
+						Piece pecaCapturada = realizaMovimento(origem, destino);
+						boolean testeCheck = testCheck(cor);
+						desfazerMovimento(origem, destino, pecaCapturada);
+						if(!testeCheck) {
+							return false;
+						}
+					}
+				}
+			}
+		}
+		return true;
+	}
+	
 	private void colocarNovaPeca(char coluna, int linha, ChessPiece peca) {
 		tabuleiro.colocarPeca(peca, new ChessPosition(coluna, linha).paraPosicao());
 		pecasNoTabuleiro.add(peca);
 	}
 	
 	private void iniciaPartida() {
-		colocarNovaPeca('c', 1, new Rook(tabuleiro, Color.WHITE));
-		colocarNovaPeca('c', 2, new Rook(tabuleiro, Color.WHITE));
-		colocarNovaPeca('d', 2, new Rook(tabuleiro, Color.WHITE));
-		colocarNovaPeca('e', 2, new Rook(tabuleiro, Color.WHITE));
-		colocarNovaPeca('e', 1, new Rook(tabuleiro, Color.WHITE));
-		colocarNovaPeca('d', 1, new King(tabuleiro, Color.WHITE));
-
-		colocarNovaPeca('c', 7, new Rook(tabuleiro, Color.BLACK));
-		colocarNovaPeca('c', 8, new Rook(tabuleiro, Color.BLACK));
-		colocarNovaPeca('d', 7, new Rook(tabuleiro, Color.BLACK));
-		colocarNovaPeca('e', 7, new Rook(tabuleiro, Color.BLACK));
-		colocarNovaPeca('e', 8, new Rook(tabuleiro, Color.BLACK));
-		colocarNovaPeca('d', 8, new King(tabuleiro, Color.BLACK));
+		colocarNovaPeca('h', 7, new Rook(tabuleiro, Color.WHITE));
+		colocarNovaPeca('d', 1, new Rook(tabuleiro, Color.WHITE));
+		colocarNovaPeca('e', 1, new King(tabuleiro, Color.WHITE));
+		
+		colocarNovaPeca('b', 8, new Rook(tabuleiro, Color.BLACK));
+		colocarNovaPeca('a', 8, new King(tabuleiro, Color.BLACK));
 	}
 }

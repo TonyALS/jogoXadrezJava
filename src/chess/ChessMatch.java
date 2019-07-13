@@ -2,6 +2,7 @@ package chess;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import boardgame.Board;
 import boardgame.Piece;
@@ -16,6 +17,9 @@ public class ChessMatch {
 	private int turno;
 	private Color currentPlayer;
 	private Board tabuleiro;
+	
+	//Por padrão um boolean começa com false:
+	private boolean check;
 	
 	private List<Piece> pecasNoTabuleiro = new ArrayList<>();
 	private List<Piece> pecasCapturadas = new ArrayList<>();
@@ -36,6 +40,10 @@ public class ChessMatch {
 		return currentPlayer;
 	}
 	
+	public boolean getCheck() {
+		return check;
+	}
+	
 	//Método para retornar uma matriz de peças de xadrez correspondente a esta partida (ChessMatch):
 	public ChessPiece[][] getPecas() {
 		ChessPiece[][] mat = new ChessPiece[tabuleiro.getLinhas()][tabuleiro.getColunas()];
@@ -54,13 +62,21 @@ public class ChessMatch {
 		return tabuleiro.peca(posicao).movimentosPossiveis();
 	}
 	
-	
 	public ChessPiece movimentaPeca(ChessPosition posicaoOrigem, ChessPosition posicaoDestino) {
 		Position origem = posicaoOrigem.paraPosicao();
 		Position destino = posicaoDestino.paraPosicao();
 		validarPosicaoOrigem(origem);
 		validarPosicaoDestino(origem, destino);
 		Piece pecaCapturada = realizaMovimento(origem, destino);
+		
+		if(testCheck(currentPlayer)) {
+			desfazerMovimento(origem, destino, pecaCapturada);
+			throw new ChessException("Voce nao pode fazer um movimento que coloque seu Rei em xeque");
+		}
+		
+		//Se o teste check do oponente for verdadeiro, então check receberá true, : (senão) receberá false:
+		check = (testCheck(oponente(currentPlayer))) ? true : false;
+		
 		proximoTurno();
 		//Downcasting (Conversão) de peca capturada já que ela era do tipo Piece.
 		return (ChessPiece)pecaCapturada;
@@ -82,6 +98,18 @@ public class ChessMatch {
 		}
 		
 		return pecaCapturada;
+	}
+	
+	private void desfazerMovimento(Position origem, Position destino, Piece pecaCapturada) {
+		Piece p = tabuleiro.removePeca(destino);
+		tabuleiro.colocarPeca(p, origem);
+		
+		//Adiciona uma possível peça capturada novamente a sua posição de origem:
+		if(pecaCapturada != null) {
+			tabuleiro.colocarPeca(pecaCapturada, destino);
+			pecasCapturadas.remove(pecaCapturada);
+			pecasNoTabuleiro.add(pecaCapturada);
+		}
 	}
 	
 	private void validarPosicaoOrigem(Position posicao) {
@@ -106,6 +134,35 @@ public class ChessMatch {
 		turno++;
 		//Se o jogador atual é == Color.WHITE então agora vai ser Color.BLACK. Caso contrário ":" Color.WHITE.
 		currentPlayer = (currentPlayer == Color.WHITE) ? Color.BLACK : Color.WHITE;
+	}
+	
+	private Color oponente(Color cor) {
+		return (cor == Color.WHITE) ? Color.BLACK : Color.WHITE;
+	}
+	
+	private ChessPiece king (Color cor) {
+		List<Piece> list = pecasNoTabuleiro.stream().filter(x -> ((ChessPiece)x).getCor()==cor).collect(Collectors.toList());
+		for(Piece p : list) {
+			//Se a peça for uma instância de Rei(King):
+			if(p instanceof King) {
+				return (ChessPiece)p;
+			}
+		}
+		//Se ocorrer esta exceção há um problema no jogo como um todo pois sempre haverá um rei antes do fim do jogo.
+		throw new IllegalStateException("Não há nenhum rei da cor " + cor + "no tabuleiro");
+	}
+	
+	//Teste do rei em xeque:
+	private boolean testCheck(Color cor) {
+		Position posicaoDoRei = king(cor).getPosicaoPeca().paraPosicao();
+		List<Piece> pecasOponente = pecasNoTabuleiro.stream().filter(x -> ((ChessPiece)x).getCor()==oponente(cor)).collect(Collectors.toList());
+		for(Piece p : pecasOponente) {
+			boolean[][] mat = p.movimentosPossiveis();
+			if(mat[posicaoDoRei.getLinha()][posicaoDoRei.getColuna()]) {
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	private void colocarNovaPeca(char coluna, int linha, ChessPiece peca) {

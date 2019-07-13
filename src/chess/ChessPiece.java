@@ -17,6 +17,11 @@ public abstract class ChessPiece extends Piece{
 		return cor;
 	}
 	
+	public ChessPosition getPosicaoPeca() {
+		return ChessPosition.dePosicao(posicao);
+	}
+	
+	
 	protected boolean pecaDoOponente(Position posicao) {
 		ChessPiece p = (ChessPiece)getTabuleiro().peca(posicao);
 		

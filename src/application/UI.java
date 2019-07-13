@@ -60,6 +60,9 @@ public class UI {
 		System.out.println();
 		System.out.println("Turno: " + partida.getTurno());
 		System.out.println("Aguardando jogador: " + partida.getCurrentPlayer());
+		if(partida.getCheck()) {
+			System.out.println("XEQUE!");
+		}
 	}
 	
 	public static void imprimeTabuleiro(ChessPiece[][] pecas) {

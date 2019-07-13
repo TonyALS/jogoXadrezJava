@@ -10,12 +10,24 @@ import chess.pieces.Rook;
 
 public class ChessMatch {
 	
+	private int turno;
+	private Color currentPlayer;
 	private Board tabuleiro;
 	
 	//Construtor que define o tamanho do tabuleiro:
 	public ChessMatch() {
 		tabuleiro = new Board(8, 8);
+		turno = 1;
+		currentPlayer = Color.WHITE;
 		iniciaPartida();
+	}
+	
+	public int getTurno() {
+		return turno;
+	}
+	
+	public Color getCurrentPlayer() {
+		return currentPlayer;
 	}
 	
 	//Método para retornar uma matriz de peças de xadrez correspondente a esta partida (ChessMatch):
@@ -43,7 +55,7 @@ public class ChessMatch {
 		validarPosicaoOrigem(origem);
 		validarPosicaoDestino(origem, destino);
 		Piece pecaCapturada = realizaMovimento(origem, destino);
-		
+		proximoTurno();
 		//Downcasting (Conversão) de peca capturada já que ela era do tipo Piece.
 		return (ChessPiece)pecaCapturada;
 	}
@@ -65,6 +77,9 @@ public class ChessMatch {
 		if(!tabuleiro.posicaoTemPeca(posicao)) {
 			throw new ChessException("Não existe peça na posição de origem.");
 		}
+		if(currentPlayer != ((ChessPiece)tabuleiro.peca(posicao)).getCor()) {
+			throw new ChessException("Voce nao pode selecionar uma peca adversaria");
+		}
 		if(!tabuleiro.peca(posicao).existeMovimentoPossivel()) {
 			throw new ChessException("Não há movimentos possíveis para esta peça.");
 		}
@@ -79,6 +94,12 @@ public class ChessMatch {
 	
 	private void colocarNovaPeca(char coluna, int linha, ChessPiece peca) {
 		tabuleiro.colocarPeca(peca, new ChessPosition(coluna, linha).paraPosicao());
+	}
+	
+	private void proximoTurno() {
+		turno++;
+		//Se o jogador atual é == Color.WHITE então agora vai ser Color.BLACK. Caso contrário ":" Color.WHITE.
+		currentPlayer = (currentPlayer == Color.WHITE) ? Color.BLACK : Color.WHITE;
 	}
 	
 	private void iniciaPartida() {

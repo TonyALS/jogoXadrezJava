@@ -1,5 +1,6 @@
 package chess;
 
+import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -22,6 +23,7 @@ public class ChessMatch {
 	private Color currentPlayer;
 	private Board tabuleiro;
 	private ChessPiece enPassantVulnerable;
+	private ChessPiece promoted;
 
 	// Por padrão um boolean começa com false:
 	private boolean check;
@@ -57,6 +59,10 @@ public class ChessMatch {
 	public ChessPiece getEnPassantVulnerable() {
 		return enPassantVulnerable;
 	}
+	
+	public ChessPiece getPromoted() {
+		return promoted;
+	}
 
 	// Método para retornar uma matriz de peças de xadrez correspondente a esta
 	// partida (ChessMatch):
@@ -91,7 +97,16 @@ public class ChessMatch {
 		}
 
 		ChessPiece movedPiece = (ChessPiece) tabuleiro.peca(destino);
-
+		
+		promoted = null;
+		if(movedPiece instanceof Pawn) {
+			if((movedPiece.getCor() == Color.WHITE && destino.getLinha() == 0)
+					|| (movedPiece.getCor() == Color.BLACK && destino.getLinha() == 7)) {
+				promoted = (ChessPiece)tabuleiro.peca(destino);
+				promoted = replacePromotedPiece("Q");
+			}
+		}
+		
 		// Se o teste check do oponente for verdadeiro, então check receberá true, :
 		// (senão) receberá false:
 		check = (testCheck(oponente(currentPlayer))) ? true : false;
@@ -113,7 +128,33 @@ public class ChessMatch {
 		// Downcasting (Conversão) de peca capturada já que ela era do tipo Piece.
 		return (ChessPiece) pecaCapturada;
 	}
-
+	
+	public ChessPiece replacePromotedPiece(String type) {
+		if(promoted == null) {
+			throw new IllegalStateException("Nao ha peca para ser promovida");
+		}
+		if(!type.equals("B") && !type.equals("N") && !type.equals("R") && !type.equals("Q")) {
+			throw new InvalidParameterException("Tipo invalido para promocao");
+		}
+		
+		Position pos = promoted.getPosicaoPeca().paraPosicao();
+		Piece p = tabuleiro.removePeca(pos);
+		pecasNoTabuleiro.remove(p);
+		
+		ChessPiece newPiece = newPiece(type, promoted.getCor());
+		tabuleiro.colocarPeca(newPiece, pos);
+		pecasNoTabuleiro.add(newPiece);
+		
+		return newPiece;
+	}
+	
+	private ChessPiece newPiece(String type, Color cor) {
+		if(type.equals("B")) return new Bishop(tabuleiro, cor);
+		if(type.equals("N")) return new Knight(tabuleiro, cor);
+		if(type.equals("Q")) return new Queen(tabuleiro, cor);
+		return new Rook(tabuleiro, cor);
+	}
+	
 	// makeMovie
 	private Piece realizaMovimento(Position origem, Position destino) {
 		// Remove a peça da posição de origem:

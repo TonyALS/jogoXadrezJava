@@ -95,8 +95,8 @@ public class ChessMatch {
 	//makeMovie
 	private Piece realizaMovimento(Position origem, Position destino) {
 		//Remove a peça da posição de origem:
-		Piece p = tabuleiro.removePeca(origem);
-		
+		ChessPiece p = (ChessPiece)tabuleiro.removePeca(origem);
+		p.incrementaContadorMovimento();
 		//Remove a possível peça que esteja na posição de destino:
 		Piece pecaCapturada = tabuleiro.removePeca(destino);
 		
@@ -112,7 +112,8 @@ public class ChessMatch {
 	}
 	
 	private void desfazerMovimento(Position origem, Position destino, Piece pecaCapturada) {
-		Piece p = tabuleiro.removePeca(destino);
+		ChessPiece p = (ChessPiece)tabuleiro.removePeca(destino);
+		p.decrementaContadorMovimento();
 		tabuleiro.colocarPeca(p, origem);
 		
 		//Adiciona uma possível peça capturada novamente a sua posição de origem:

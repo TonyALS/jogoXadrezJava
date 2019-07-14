@@ -7,6 +7,7 @@ import boardgame.Position;
 public abstract class ChessPiece extends Piece{
 	
 	private Color cor;
+	private int moveCount;
 
 	public ChessPiece(Board tabuleiro, Color cor) {
 		super(tabuleiro);
@@ -17,10 +18,21 @@ public abstract class ChessPiece extends Piece{
 		return cor;
 	}
 	
+	public int getMoveCount() {
+		return moveCount;
+	}
+	
+	public void incrementaContadorMovimento() {
+		moveCount++;
+	}
+	
+	public void decrementaContadorMovimento() {
+		moveCount--;
+	}
+	
 	public ChessPosition getPosicaoPeca() {
 		return ChessPosition.dePosicao(posicao);
 	}
-	
 	
 	protected boolean pecaDoOponente(Position posicao) {
 		ChessPiece p = (ChessPiece)getTabuleiro().peca(posicao);
